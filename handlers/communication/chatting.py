@@ -18,15 +18,14 @@ async def search_interlocutor(message: types.Message):
                     await db.add_to_queue(message.chat.id)
                     await message.answer("🕒 Поиск собеседника начался, пожалуйста подождите...", reply_markup=keyboard.stop_search)
                 else:
-                    is_active_interlocutor = await db.is_active_chat(interlocutor["chat_id"])
-                    if is_active_interlocutor:
+                    if await db.is_active_interlocutor(interlocutor["chat_id"]):
                         await db.remove_from_queue(message.chat.id)
                         await db.remove_from_queue(interlocutor["chat_id"])
 
                         await db.create_chat_with_user(message.chat.id, interlocutor["chat_id"])
                         await db.create_chat_with_user(interlocutor["chat_id"], message.chat.id)
 
-                        chat_info = await self.get_chat_info(message.chat.id)
+                        chat_info = await db.get_chat_info(message.chat.id)
                         default_text = "Собеседник найден! Можете приступить к общению."
 
                         await message.answer(default_text, reply_markup=keyboard.leave)
@@ -55,7 +54,7 @@ async def leave_from_chat_action(message: types.Message):
         chat_info = await db.get_chat_info(message.chat.id)
 
         await message.answer("Вы покинули чат.", reply_markup=keyboard.main_menu)
-        await dp.bot.send_message(text="Вы покинули чат.", chat_id=chat_info["interlocutor_chat_id"], reply_markup=keyboard.main_menu)
+        await dp.bot.send_message(text="Собеседник покинул чат.", chat_id=chat_info["interlocutor_chat_id"], reply_markup=keyboard.main_menu)
 
         await db.remove_from_chat(chat_info["interlocutor_chat_id"])
         await db.remove_from_chat(message.chat.id)
