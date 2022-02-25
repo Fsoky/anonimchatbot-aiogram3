@@ -34,7 +34,10 @@ class DataBase:
     """Methods for chat"""
 
     async def is_active_chat(self, chat_id):
-        return await self.collchats.count_documents({"chat_id": chat_id})
+        return await self.collchats.count_documents({"user_chat_id": chat_id})
+
+    async def is_active_interlocutor(self, chat_id):
+        return await self.collqueue.count_documents({"chat_id": chat_id})
 
     async def find_interlocutor(self):
         return await self.collqueue.find_one({})
@@ -57,7 +60,7 @@ class DataBase:
         return await self.collchats.find_one({"user_chat_id": chat_id})
 
     async def is_in_the_queue(self, chat_id):
-        return await self.collchats.count_documents({"user_chat_id": chat_id})
+        return await self.collqueue.count_documents({"chat_id": chat_id})
 
     async def remove_from_chat(self, chat_id):
         await self.collchats.delete_one({"user_chat_id": chat_id})
