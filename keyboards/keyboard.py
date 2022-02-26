@@ -22,6 +22,9 @@ account = ReplyKeyboardMarkup(
         [
             KeyboardButton("💣 Удалить аккаунт"),
             KeyboardButton("🍒 Главное меню")
+        ],
+        [
+            KeyboardButton("💖 Обновить информацию о себе")
         ]
     ],
     resize_keyboard=True
