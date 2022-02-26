@@ -64,3 +64,6 @@ class DataBase:
 
     async def remove_from_chat(self, chat_id):
         await self.collchats.delete_one({"user_chat_id": chat_id})
+
+    async def update_user_bio(self, user_id, content):
+        await self.collusers.update_one({"user_id": user_id}, {"$set": {"bio": content}})
