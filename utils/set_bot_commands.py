@@ -11,6 +11,7 @@ async def set_default_commands(dp):
             types.BotCommand("remove", "Удалить аккаунт"),
             types.BotCommand("registration", "Зарегистрироваться"),
             types.BotCommand("stop", "Остановить поиск"),
-            types.BotCommand("leave", "Покинуть чат")
+            types.BotCommand("leave", "Покинуть чат"),
+            types.BotCommand("bio", "Обновить информацию о себе")
         ]
     )
