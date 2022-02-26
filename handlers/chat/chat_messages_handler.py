@@ -6,6 +6,7 @@ from utils.db_api import motor_database
 from ..users.start import main_menu
 from ..users.accounts import account_user, remove_account_action, account_registration_action
 from ..communication.chatting import search_interlocutor, stop_search_action, leave_from_chat_action
+from ..states.custom_states import user_bio
 
 db = motor_database.DataBase()
 
@@ -28,28 +29,19 @@ async def content_handler(message: types.Message):
         await stop_search_action(message)
     elif message.text == "💔 Покинуть чат":
         await leave_from_chat_action(message)
-    elif message.content_type == "sticker":
-        try:
+    elif message.text == "💖 Обновить информацию о себе":
+        await user_bio(message)
+
+    try:
+        if message.content_type == "sticker":
             await bot.send_sticker(chat_id=chat_id["interlocutor_chat_id"], sticker=message.sticker["file_id"])
-        except TypeError:
-            pass
-    elif message.content_type == "photo":
-        try:
-            await bot.send_photo(chat_id=chat_id["interlocutor_chat_id"], sticker=message.photo["file_id"])
-        except TypeError:
-            pass
-    elif message.content_type == "voice":
-        try:
-            await bot.send_voice(chat_id=chat_id["interlocutor_chat_id"], sticker=message.voice["file_id"])
-        except TypeError:
-            pass
-    elif message.content_type == "document":
-        try:
-            await bot.send_document(chat_id=chat_id["interlocutor_chat_id"], sticker=message.document["file_id"])
-        except TypeError:
-            pass
-    else:
-        try:
+        elif message.content_type == "photo":
+            await bot.send_photo(chat_id=chat_id["interlocutor_chat_id"], photo=message.photo["file_id"])
+        elif message.content_type == "voice":
+            await bot.send_voice(chat_id=chat_id["interlocutor_chat_id"], voice=message.voice["file_id"])
+        elif message.content_type == "document":
+            await bot.send_document(chat_id=chat_id["interlocutor_chat_id"], document=message.document["file_id"])
+        else:
             await bot.send_message(text=message.text, chat_id=chat_id["interlocutor_chat_id"])
-        except TypeError:
-            pass
+    except TypeError:
+        pass
