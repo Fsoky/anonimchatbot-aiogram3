@@ -1,3 +1,2 @@
-aiogram==2.14.3
-environs==9.5.0
-motor==2.5.1
+aiogram==3.3.0
+motor==3.3.2
