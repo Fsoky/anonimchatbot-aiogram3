@@ -11,7 +11,7 @@ router = Router()
         [
             "text", "audio", "voice",
             "sticker", "document", "photo",
-            "video"
+            "video", "video_note", "animation"
         ]
     )
 )
@@ -67,6 +67,21 @@ async def echo(message: Message, db: MDB) -> None:
             await message.bot.send_video(
                 user["interlocutor"],
                 message.video.file_id,
+                caption=message.caption,
+                caption_entities=message.caption_entities,
+                parse_mode=None
+            )
+
+        if message.content_type == "video_note":
+            await message.bot.send_video_note(
+                user["interlocutor"],
+                message.video_note.file_id,
+            )
+
+        if message.content_type == "animation":
+            await message.bot.send_video(
+                user["interlocutor"],
+                message.animation.file_id,
                 caption=message.caption,
                 caption_entities=message.caption_entities,
                 parse_mode=None
