@@ -20,10 +20,15 @@ async def echo(message: Message, db: MDB) -> None:
     
     if user["status"] == 2:
         if message.content_type == "text":
+            if not message.reply_to_message:
+                reply = None
+            else:
+                reply = message.reply_to_message.message_id-1
             await message.bot.send_message(
                 user["interlocutor"],
                 message.text,
                 entities=message.entities,
+                reply_to_message_id=reply,
                 parse_mode=None
             )
         if message.content_type == "photo":
