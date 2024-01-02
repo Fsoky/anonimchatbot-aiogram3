@@ -71,13 +71,11 @@ async def echo(message: Message, db: MDB) -> None:
                 caption_entities=message.caption_entities,
                 parse_mode=None
             )
-
         if message.content_type == "video_note":
             await message.bot.send_video_note(
                 user["interlocutor"],
                 message.video_note.file_id,
             )
-
         if message.content_type == "animation":
             await message.bot.send_animation(
                 user["interlocutor"],
