@@ -20,10 +20,10 @@ async def echo(message: Message, db: MDB) -> None:
     
     if user["status"] == 2:
         if message.content_type == "text":
-            if not message.reply_to_message:
-                reply = None
-            else:
-                reply = message.reply_to_message.message_id-1
+            reply = None
+            if message.reply_to_message:
+                reply = message.reply_to_message.message_id - 1
+
             await message.bot.send_message(
                 user["interlocutor"],
                 message.text,
