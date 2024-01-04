@@ -6,6 +6,15 @@ from motor.core import AgnosticDatabase as MDB
 router = Router()
 
 
+@router.edited_message()
+async def editing_messages(message: Message, db: MDB) -> None:
+    user = await db.users.find_one({"_id": message.from_user.id})
+    if user["status"] == 2:
+        await bot.edit_message_text(message.text, user["interlocutor"], message.message_id + 1)
+    else:
+        pass
+
+
 @router.message(
     F.content_type.in_(
         [
