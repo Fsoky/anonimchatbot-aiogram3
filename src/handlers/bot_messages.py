@@ -10,9 +10,16 @@ router = Router()
 async def editing_messages(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
     if user["status"] == 2:
-        await message.bot.edit_message_text(
-            message.text, user["interlocutor"], message.message_id + 1
-        )
+        if message.text:
+            await message.bot.edit_message_text(message.text, user["interlocutor"], message.message_id + 1)
+        elif message.caption:
+            await message.bot.edit_message_caption(
+                message.caption,
+                user["interlocutor"],
+                message.message_id + 1,
+                caption_entities=message.caption_entities,
+                parse_mode=None
+            )
 
 
 @router.message(
@@ -20,7 +27,7 @@ async def editing_messages(message: Message, db: MDB) -> None:
         [
             "text", "audio", "voice",
             "sticker", "document", "photo",
-            "video", "video_note", "animation"
+            "video"
         ]
     )
 )
@@ -89,17 +96,4 @@ async def echo(message: Message, db: MDB) -> None:
                 caption_entities=message.caption_entities,
                 parse_mode=None,
                 has_spoiler=True
-            )
-        if message.content_type == "video_note":
-            await message.bot.send_video_note(
-                user["interlocutor"],
-                message.video_note.file_id
-            )
-        if message.content_type == "animation":
-            await message.bot.send_animation(
-                user["interlocutor"],
-                message.video_note.file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None
             )
