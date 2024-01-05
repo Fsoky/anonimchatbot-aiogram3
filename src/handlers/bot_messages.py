@@ -29,7 +29,10 @@ async def echo(message: Message, db: MDB) -> None:
         if message.content_type == "text":
             reply = None
             if message.reply_to_message:
-                reply = message.reply_to_message.message_id - 1
+                if message.reply_to_message.from_user.id == message.from_user.id:
+                    reply = message.reply_to_message.message_id + 1
+                else:
+                    reply = message.reply_to_message.message_id - 1
 
             await message.bot.send_message(
                 user["interlocutor"],
