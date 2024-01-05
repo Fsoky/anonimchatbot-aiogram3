@@ -13,7 +13,7 @@ router = Router()
 async def search_interlocutor(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
     pattern = {
-        "text": "У вас уже есть собеседник",
+        "text": "Вы уже в поиске",
         "reply_markup": reply_builder("❌ Отмена")
     }
 
@@ -35,7 +35,7 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
             )
             await message.bot.send_message(interlocutor["_id"], **pattern)
     else:
-        pattern["text"] = "Вы уже в поиске"
+        pattern["text"] = "У вас уже есть собеседник"
     await message.reply(**pattern)
 
 

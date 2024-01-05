@@ -49,7 +49,8 @@ async def echo(message: Message, db: MDB) -> None:
                 message.photo[-1].file_id,
                 caption=message.caption,
                 caption_entities=message.caption_entities,
-                parse_mode=None
+                parse_mode=None,
+                has_spoiler=True
             )
         if message.content_type == "audio":
             await message.bot.send_audio(
@@ -86,7 +87,8 @@ async def echo(message: Message, db: MDB) -> None:
                 message.video.file_id,
                 caption=message.caption,
                 caption_entities=message.caption_entities,
-                parse_mode=None
+                parse_mode=None,
+                has_spoiler=True
             )
         if message.content_type == "video_note":
             await message.bot.send_video_note(
