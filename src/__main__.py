@@ -18,7 +18,7 @@ async def main() -> None:
     cluster = AsyncIOMotorClient(host="localhost", port=27017)
     db = cluster.anonimdb
 
-    dp.message.middleware(CheckUser())
+    #dp.message.middleware(CheckUser())
 
     message_routers = setup_message_routers()
     dp.include_router(message_routers)

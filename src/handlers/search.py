@@ -22,7 +22,7 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
         await db.users.update_one({"_id": user["_id"]}, {"$set": {"status": 1}})
 
         if not interlocutor:
-            pattern["text"] = "Вы начали поиск соперника"
+            pattern["text"] = "Вы начали поиск собеседника"
         else:
             pattern["text"] = "Вы нашли собеседника"
             pattern["reply_markup"] = reply_builder("❌ Выйти")

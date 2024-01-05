@@ -17,6 +17,6 @@ class CheckUser(BaseMiddleware):
         db: MDB = data.get("db")
         
         user = await db.users.find_one({"_id": event.from_user.id})
-        if not user:
+        if not user and event.text.startswith("/start"):
             return await event.answer("/start")
         return await handler(event, data)

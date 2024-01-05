@@ -10,7 +10,9 @@ router = Router()
 async def editing_messages(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
     if user["status"] == 2:
-        await bot.edit_message_text(message.text, user["interlocutor"], message.message_id + 1)
+        await message.bot.edit_message_text(
+            message.text, user["interlocutor"], message.message_id + 1
+        )
 
 
 @router.message(
@@ -18,7 +20,7 @@ async def editing_messages(message: Message, db: MDB) -> None:
         [
             "text", "audio", "voice",
             "sticker", "document", "photo",
-            "video"
+            "video", "video_note", "animation"
         ]
     )
 )
@@ -82,6 +84,19 @@ async def echo(message: Message, db: MDB) -> None:
             await message.bot.send_video(
                 user["interlocutor"],
                 message.video.file_id,
+                caption=message.caption,
+                caption_entities=message.caption_entities,
+                parse_mode=None
+            )
+        if message.content_type == "video_note":
+            await message.bot.send_video_note(
+                user["interlocutor"],
+                message.video_note.file_id
+            )
+        if message.content_type == "animation":
+            await message.bot.send_animation(
+                user["interlocutor"],
+                message.video_note.file_id,
                 caption=message.caption,
                 caption_entities=message.caption_entities,
                 parse_mode=None
