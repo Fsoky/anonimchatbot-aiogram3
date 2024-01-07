@@ -28,4 +28,4 @@ cd anonimchatbot-aiogram3/src
 ```
 ```bash
 python __main__.py
-```bash
+```
