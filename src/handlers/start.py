@@ -21,4 +21,9 @@ async def start(message: Message, db: MDB) -> None:
             "status": 0
         })
 
-    await message.reply("Начинай поиск собеседника!", reply_markup=main_kb)
+    searchers = await db.users.count_documents({"status": 1})
+    await message.reply(
+        "<b>☕ Начинай поиск собеседника!</b>\n"
+        f"<i>👀 Участников в поиске:</i> <code>{searchers}</code>",
+        reply_markup=main_kb
+    )

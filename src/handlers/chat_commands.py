@@ -15,9 +15,9 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
     pattern = {
         "text": (
             "<b>☕ У тебя уже есть активный чат</b>\n"
-            "<i>Используй команду /leave, чтобы покинуть чат<i>"
+            "<i>Используй команду /leave, чтобы покинуть чат</i>"
         ),
-        "reply_markup": reply_builder("❌ Отменить поиск")
+        "reply_markup": reply_builder("🚫 Прекратить диалог")
     }
 
     if user["status"] == 0:
@@ -29,6 +29,7 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
                 "<b>👀 Ищу тебе собеседника...</b>\n"
                 "<i>/cancel - Отменить поиск собеседника</i>"
             )
+            pattern["reply_markup"] = reply_builder("❌ Отменить поиск")
         else:
             pattern["text"] = (
                 "<b>🎁 Я нашел тебе собеседника, приятного общения!</b>\n"
@@ -44,11 +45,12 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
                 {"_id": interlocutor["_id"]}, {"$set": {"status": 2, "interlocutor": user["_id"]}}
             )
             await message.bot.send_message(interlocutor["_id"], **pattern)
-    else:
+    elif user["status"] == 1:
         pattern["text"] = (
             "<b>👀 УЖЕ ИЩУ тебе собеседника...</b>\n"
             "<i>/cancel - Отменить поиск собеседника</i>"
         )
+        pattern["reply_markup"] = reply_builder("❌ Отменить поиск")
 
     await message.reply(**pattern)
 
@@ -67,8 +69,6 @@ async def cancel_search(message: Message, db: MDB) -> None:
 async def leave(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
     if user["status"] == 2:
-        interlocutor = await db.users.find_one({"_id": user["interlocutor"]})
-
         await message.reply("<b>💬 Ты покинул чат!</b>", reply_markup=main_kb)
         await message.bot.send_message(
             user["interlocutor"], "<b>💬 Собеседник покинул чат!</b>", reply_markup=main_kb
@@ -79,10 +79,7 @@ async def leave(message: Message, db: MDB) -> None:
             {"$set": {"status": 0, "interlocutor": ""}}
         )
 
-        if user["auto_search"]:
-            await search_interlocutor(message, db)
-        if interlocutor["auto_search"]:
-            pass # idk
+        # TODO: Реализовать автопоиск
 
 
 @router.message(Command("next"))
