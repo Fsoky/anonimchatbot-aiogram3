@@ -17,7 +17,7 @@ async def main() -> None:
     bot = Bot(config.BOT_TOKEN.get_secret_value(), parse_mode=ParseMode.HTML)
     dp = Dispatcher()
 
-    cluster = AsyncIOMotorClient(host="localhost", port=27017)
+    cluster = AsyncIOMotorClient(config.DATABASE_URL.get_secret_value())
     db = cluster.anonimdb
 
     dp.message.middleware(CheckUser())

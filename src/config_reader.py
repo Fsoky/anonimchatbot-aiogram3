@@ -4,6 +4,7 @@ from pydantic import SecretStr
 
 class Settings(BaseSettings):
     BOT_TOKEN: SecretStr
+    DATABASE_URL: SecretStr
 
     model_config = SettingsConfigDict(
         env_file=".env",
