@@ -1,32 +1,32 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from handlers import setup_message_routers
-from callbacks import setup_callbacks_routers
-
-from middlewares import CheckUser
+from handlers import setup_routers
+from middlewares import UserMiddleware
 
 from config_reader import config
 
 
 async def main() -> None:
-    bot = Bot(config.BOT_TOKEN.get_secret_value(), parse_mode=ParseMode.HTML)
+    bot = Bot(
+        config.BOT_TOKEN.get_secret_value(),
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    )
     dp = Dispatcher()
 
     cluster = AsyncIOMotorClient(config.DATABASE_URL.get_secret_value())
     db = cluster.anonimdb
 
-    dp.message.middleware(CheckUser())
+    dp.message.middleware(UserMiddleware())
+    dp.callback_query.middleware(UserMiddleware())
+    dp.include_router(setup_routers())
 
-    message_routers = setup_message_routers()
-    callback_routers = setup_callbacks_routers()
-    dp.include_router(message_routers)
-    dp.include_router(callback_routers)
-
+    await bot.delete_webhook(True)
     await dp.start_polling(bot, db=db)
 
 
