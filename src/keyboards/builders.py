@@ -1,3 +1,4 @@
+from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 
@@ -5,7 +6,7 @@ def reply_builder(
     text: str | list[str],
     sizes: int | list[int]=2,
     **kwargs
-) -> ReplyKeyboardBuilder:
+) -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     text = [text] if isinstance(text, str) else text
@@ -25,7 +26,7 @@ def inline_builder(
     callback_data: str | list[str],
     sizes: int | list[int]=2,
     **kwargs
-) -> InlineKeyboardBuilder:
+) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     text = [text] if isinstance(text, str) else text
