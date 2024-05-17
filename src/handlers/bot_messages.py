@@ -11,7 +11,9 @@ async def editing_messages(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
     if user["status"] == 2:
         if message.text:
-            await message.bot.edit_message_text(message.text, user["interlocutor"], message.message_id + 1)
+            await message.bot.edit_message_text(
+                message.text, user["interlocutor"], message.message_id + 1
+            )
         elif message.caption:
             await message.bot.edit_message_caption(
                 message.caption,
