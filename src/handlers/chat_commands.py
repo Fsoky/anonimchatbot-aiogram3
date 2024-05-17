@@ -1,3 +1,5 @@
+from typing import Any
+
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command, or_f
@@ -10,8 +12,7 @@ router = Router()
 
 
 @router.message(or_f(Command("search"), F.text == "☕ Искать собеседника"))
-async def search_interlocutor(message: Message, db: MDB) -> None:
-    user = await db.users.find_one({"_id": message.from_user.id})
+async def search_interlocutor(message: Message, db: MDB, user: dict[str, Any]) -> None:
     pattern = {
         "text": (
             "<b>☕ У тебя уже есть активный чат</b>\n"
@@ -56,8 +57,7 @@ async def search_interlocutor(message: Message, db: MDB) -> None:
 
 
 @router.message(or_f(Command("cancel"), F.text == "❌ Отменить поиск"))
-async def cancel_search(message: Message, db: MDB) -> None:
-    user = await db.users.find_one({"_id": message.from_user.id})
+async def cancel_search(message: Message, db: MDB, user: dict[str, Any]) -> None:
     if user["status"] == 1:
         await db.users.update_one({"_id": user["_id"]}, {"$set": {"status": 0}})
         await message.reply(
@@ -66,8 +66,7 @@ async def cancel_search(message: Message, db: MDB) -> None:
 
 
 @router.message(or_f(Command(commands=["leave", "stop"]), F.text == "🚫 Прекратить диалог"))
-async def leave(message: Message, db: MDB) -> None:
-    user = await db.users.find_one({"_id": message.from_user.id})
+async def leave(message: Message, db: MDB, user: dict[str, Any]) -> None:
     if user["status"] == 2:
         await message.reply("<b>💬 Ты покинул чат!</b>", reply_markup=main_kb)
         await message.bot.send_message(
@@ -83,8 +82,7 @@ async def leave(message: Message, db: MDB) -> None:
 
 
 @router.message(Command("next"))
-async def next_interlocutor(message: Message, db: MDB) -> None:
-    user = await db.users.find_one({"_id": message.from_user.id})
+async def next_interlocutor(message: Message, db: MDB, user: dict[str, Any]) -> None:
     if user["status"] == 2:
         await message.bot.send_message(
             user["interlocutor"], "<b>💬 Собеседник покинул чат!</b>", reply_markup=main_kb
