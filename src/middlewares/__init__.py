@@ -1,1 +1,1 @@
-from .check_user import CheckUser
+from .user_middleware import UserMiddleware
