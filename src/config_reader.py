@@ -1,18 +1,17 @@
 import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
-ENV_FILE_DIR = os.path.abspath(".")
 
-
-class Settings(BaseSettings):
+class Config(BaseSettings):
     BOT_TOKEN: SecretStr
     DATABASE_URL: SecretStr
 
     model_config = SettingsConfigDict(
-        env_file=f"{ENV_FILE_DIR}/.env",
+        env_file=os.path.join(os.path.dirname(__file__), ".env"),
         env_file_encoding="utf-8"
     )
 
 
-config = Settings()
+config = Config()
