@@ -11,7 +11,9 @@ class Config(BaseSettings):
     DATABASE_URL: SecretStr
     MONGO_INITDB_ROOT_USERNAME: Optional[str] = None
     MONGO_INITDB_ROOT_PASSWORD: Optional[str] = None
-
+    ME_CONFIG_BASICAUTH_USERNAME: Optional[str] = None
+    ME_CONFIG_BASICAUTH_PASSWORD: Optional[str] = None
+    
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
         env_file_encoding="utf-8"
