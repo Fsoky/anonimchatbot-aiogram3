@@ -41,7 +41,7 @@ async def echo(message: Message, db: MDB) -> None:
                 reply = message.reply_to_message.message_id - 1
         
         dump = message.model_dump()
-        dump["chat_id"] = message.from_user.id
+        dump["chat_id"] = user["interlocutor"]
         dump["parse_mode"] = None
         dump["reply_to_message_id"] = reply
 
