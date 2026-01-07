@@ -3,7 +3,11 @@ from aiogram.types import Message
 
 from motor.core import AgnosticDatabase as MDB
 
+from utils.funcs import get_schema
+
 router = Router()
+common_content_types = ["text"]
+media_content_types = ["sticker", "photo", "video", "document", "voice", "audio"]
 
 
 @router.edited_message()
@@ -24,78 +28,30 @@ async def editing_messages(message: Message, db: MDB) -> None:
             )
 
 
-@router.message(
-    F.content_type.in_(
-        [
-            "text", "audio", "voice",
-            "sticker", "document", "photo",
-            "video"
-        ]
-    )
-)
+@router.message(F.content_type.in_(common_content_types + media_content_types))
 async def echo(message: Message, db: MDB) -> None:
     user = await db.users.find_one({"_id": message.from_user.id})
+    reply = None
     
     if user["status"] == 2:
-        if message.content_type == "text":
-            reply = None
-            if message.reply_to_message:
-                if message.reply_to_message.from_user.id == message.from_user.id:
-                    reply = message.reply_to_message.message_id + 1
-                else:
-                    reply = message.reply_to_message.message_id - 1
+        if message.reply_to_message:
+            if message.reply_to_message.from_user.id == message.from_user.id:
+                reply = message.reply_to_message.message_id + 1
+            else:
+                reply = message.reply_to_message.message_id - 1
+        
+        dump = message.model_dump()
+        dump["chat_id"] = message.from_user.id
+        dump["parse_mode"] = None
+        dump["reply_to_message_id"] = reply
 
-            await message.bot.send_message(
-                user["interlocutor"],
-                message.text,
-                entities=message.entities,
-                reply_to_message_id=reply,
-                parse_mode=None
-            )
-        if message.content_type == "photo":
-            await message.bot.send_photo(
-                user["interlocutor"],
-                message.photo[-1].file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None,
-                has_spoiler=True
-            )
-        if message.content_type == "audio":
-            await message.bot.send_audio(
-                user["interlocutor"],
-                message.audio.file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None
-            )
-        if message.content_type == "voice":
-            await message.bot.send_voice(
-                user["interlocutor"],
-                message.voice.file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None
-            )
-        if message.content_type == "document":
-            await message.bot.send_document(
-                user["interlocutor"],
-                message.document.file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None
-            )
-        if message.content_type == "sticker":
-            await message.bot.send_sticker(
-                user["interlocutor"],
-                message.sticker.file_id
-            )
-        if message.content_type == "video":
-            await message.bot.send_video(
-                user["interlocutor"],
-                message.video.file_id,
-                caption=message.caption,
-                caption_entities=message.caption_entities,
-                parse_mode=None,
-                has_spoiler=True
-            )
+        if message.content_type in media_content_types:
+            attr = getattr(message, message.content_type)
+            if isinstance(attr, list):
+                file_id = attr[-1].file_id
+            else:
+                file_id = attr.file_id
+            dump[message.content_type] = file_id
+
+        schema = get_schema(message.content_type, dump)
+        await message.bot(schema)
