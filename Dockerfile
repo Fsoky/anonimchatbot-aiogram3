@@ -1,16 +1,18 @@
 FROM python:3.10-slim
 
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV UV_SYSTEM_PYTHON=1
+
 WORKDIR /app
-COPY . /app
 
-# Install Poetry
-RUN pip install poetry
+RUN pip install --upgrade pip wheel uv
 
-# Create a virtual environment
-RUN python -m venv /venv
+COPY pyproject.toml uv.lock prestart.sh ./
 
-# Activate the virtual environment and install dependencies
-RUN . /venv/bin/activate && poetry install --no-root
+RUN uv pip compile ./pyproject.toml -o requirements.txt
+RUN uv pip install -r requirements.txt
 
-# Command to run the application
-CMD ["/venv/bin/python", "src/__main__.py"]
+COPY src ./src
+
+CMD ["python", "-m", "src.__main__"]
