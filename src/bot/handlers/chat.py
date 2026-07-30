@@ -1,6 +1,6 @@
-from aiogram import Router, F
 from typing import Literal
 
+from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command, StateFilter, or_f
 from aiogram.fsm.scene import Scene, on
